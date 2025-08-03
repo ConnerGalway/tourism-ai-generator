@@ -55,8 +55,29 @@ The server will start on `http://localhost:3000`
 
 1. Open your browser to `http://localhost:3000`
 2. Fill out the form with your tourism business details
-3. Click "Generate Content Ideas"
-4. You should see real AI-generated content!
+3. **Optional**: Upload an image of your business, property, or location
+4. Click "Generate Content Ideas"
+5. You should see real AI-generated content inspired by your image!
+
+## 🖼️ **Image Upload Feature**
+
+### **Supported Formats**
+- **JPG/JPEG**: Best for photos
+- **PNG**: Good for graphics and transparent images
+- **GIF**: Animated images supported
+- **File size limit**: 5MB maximum
+
+### **How It Works**
+1. **Upload an image** of your business, property, or location
+2. **AI analyzes the image** using GPT-4 Vision
+3. **Content is generated** with visual context
+4. **Images are automatically deleted** after processing for privacy
+
+### **Best Practices**
+- **Use high-quality images** for better results
+- **Include your property/business** in the image
+- **Show the location/area** around your business
+- **Avoid personal photos** - focus on business/location
 
 ## 🔧 **Development Mode**
 
@@ -102,8 +123,10 @@ npm run dev
 ## 💰 **OpenAI API Costs**
 
 - **GPT-3.5-turbo**: ~$0.002 per 1K tokens
+- **GPT-4 Vision**: ~$0.01 per image analysis
 - **Typical content generation**: ~$0.01-0.05 per request
-- **Monthly cost estimate**: $5-50 depending on usage
+- **With image upload**: ~$0.02-0.08 per request
+- **Monthly cost estimate**: $5-100 depending on usage and image uploads
 
 ## 🐛 **Troubleshooting**
 
@@ -167,6 +190,8 @@ console.log('API Key:', process.env.OPENAI_API_KEY ? 'Set' : 'Missing');
 3. **Add analytics tracking** for usage insights
 4. **Create admin dashboard** for content management
 5. **Add image generation** with DALL-E integration
+6. **Implement image optimization** for faster uploads
+7. **Add multiple image support** for galleries
 
 ## 📞 **Support**
 

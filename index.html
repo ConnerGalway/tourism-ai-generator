@@ -100,6 +100,26 @@
                         <div id="keywords-help" class="help-text">Enter keywords separated by commas</div>
                     </div>
 
+                    <div class="form-group">
+                        <label for="businessImage">Business Image (Optional)</label>
+                        <div class="image-upload-container">
+                            <input type="file" id="businessImage" accept="image/*" aria-describedby="image-help" class="image-input">
+                            <div class="upload-area" id="uploadArea">
+                                <div class="upload-content">
+                                    <span class="upload-icon">📷</span>
+                                    <p>Click to upload or drag an image here</p>
+                                    <p class="upload-hint">Supports JPG, PNG, GIF (max 5MB)</p>
+                                </div>
+                            </div>
+                            <div id="imagePreview" class="image-preview" style="display: none;">
+                                <img id="previewImg" alt="Business image preview">
+                                <button type="button" id="removeImage" class="remove-image-btn" aria-label="Remove image">×</button>
+                            </div>
+                        </div>
+                        <div id="image-help" class="help-text">Upload an image of your business, location, or property to help generate more specific content</div>
+                        <div id="image-error" class="error-message" role="alert" aria-live="polite"></div>
+                    </div>
+
                     <button type="submit" class="generate-btn" id="generateBtn" aria-describedby="generate-status">
                         🎯 Generate Content Ideas
                     </button>

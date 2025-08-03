@@ -152,4 +152,8 @@ Thumbs.db
 
 # Build outputs
 dist/
-build/ 
+build/
+
+# Uploaded files
+uploads/
+*.tmp 

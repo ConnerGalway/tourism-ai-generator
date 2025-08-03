@@ -1,15 +1,49 @@
 const express = require('express');
 const cors = require('cors');
 const OpenAI = require('openai');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 require('dotenv').config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
+// Configure multer for image uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = 'uploads/';
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        // Check file type
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'), false);
+        }
+    }
+});
+
 // Middleware
 app.use(cors());
 app.use(express.json());
 app.use(express.static('.')); // Serve static files
+app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
 // Initialize OpenAI
 const openai = new OpenAI({
@@ -17,8 +51,13 @@ const openai = new OpenAI({
 });
 
 // Content generation endpoint
-app.post('/api/generate-content', async (req, res) => {
+app.post('/api/generate-content', upload.single('image'), async (req, res) => {
     try {
+        // Handle both JSON and multipart form data
+        const formData = req.body;
+        const uploadedImage = req.file;
+
+        // Extract data from form
         const {
             businessType,
             contentType,
@@ -27,7 +66,7 @@ app.post('/api/generate-content', async (req, res) => {
             target,
             tone,
             keywords
-        } = req.body;
+        } = formData;
 
         // Validate required fields
         if (!businessType || !contentType || !location) {
@@ -36,7 +75,7 @@ app.post('/api/generate-content', async (req, res) => {
             });
         }
 
-        // Create the prompt based on content type
+        // Create the prompt based on content type and image
         const prompt = createPrompt({
             businessType,
             contentType,
@@ -44,7 +83,9 @@ app.post('/api/generate-content', async (req, res) => {
             season,
             target,
             tone,
-            keywords
+            keywords,
+            hasImage: !!uploadedImage,
+            imageDescription: uploadedImage ? await analyzeImage(uploadedImage.path) : null
         });
 
         // Generate content using OpenAI
@@ -53,7 +94,7 @@ app.post('/api/generate-content', async (req, res) => {
             messages: [
                 {
                     role: "system",
-                    content: "You are a professional tourism content writer specializing in creating compelling, engaging content for tourism businesses. Always write in the specified tone and format."
+                    content: "You are a professional tourism content writer specializing in creating compelling, engaging content for tourism businesses. Always write in the specified tone and format. If an image is provided, incorporate visual details into the content."
                 },
                 {
                     role: "user",
@@ -67,8 +108,13 @@ app.post('/api/generate-content', async (req, res) => {
         const generatedContent = completion.choices[0].message.content;
 
         // Generate variations and hashtags
-        const variations = await generateVariations(businessType, location, season, target);
+        const variations = await generateVariations(businessType, location, season, target, uploadedImage);
         const hashtags = await generateHashtags(businessType, location);
+
+        // Clean up uploaded file
+        if (uploadedImage && fs.existsSync(uploadedImage.path)) {
+            fs.unlinkSync(uploadedImage.path);
+        }
 
         res.json({
             main: generatedContent,
@@ -78,6 +124,12 @@ app.post('/api/generate-content', async (req, res) => {
 
     } catch (error) {
         console.error('Error generating content:', error);
+        
+        // Clean up uploaded file on error
+        if (req.file && fs.existsSync(req.file.path)) {
+            fs.unlinkSync(req.file.path);
+        }
+        
         res.status(500).json({
             error: 'Failed to generate content',
             details: error.message
@@ -86,7 +138,7 @@ app.post('/api/generate-content', async (req, res) => {
 });
 
 function createPrompt(data) {
-    const { businessType, contentType, location, season, target, tone, keywords } = data;
+    const { businessType, contentType, location, season, target, tone, keywords, hasImage, imageDescription } = data;
     
     const businessTypes = {
         hotel: 'hotel or resort',
@@ -115,14 +167,20 @@ function createPrompt(data) {
         informative: 'informative and helpful'
     };
 
-    return `Create a ${contentTypes[contentType]} for a ${businessTypes[businessType]} in ${location}.
+    let prompt = `Create a ${contentTypes[contentType]} for a ${businessTypes[businessType]} in ${location}.
 
 Business Details:
 - Location: ${location}
 - Season: ${season || 'any season'}
 - Target Audience: ${target || 'general travelers'}
 - Tone: ${tones[tone] || 'friendly'}
-- Key Features: ${keywords || 'amazing experiences and local charm'}
+- Key Features: ${keywords || 'amazing experiences and local charm'}`;
+
+    if (hasImage && imageDescription) {
+        prompt += `\n\nImage Description: ${imageDescription}`;
+    }
+
+    prompt += `
 
 Requirements:
 - Write in a ${tones[tone] || 'friendly'} tone
@@ -134,13 +192,55 @@ Requirements:
 - Keep it authentic and local-focused
 
 Please generate the content now:`;
+
+    return prompt;
 }
 
-async function generateVariations(businessType, location, season, target) {
+async function analyzeImage(imagePath) {
     try {
-        const prompt = `Generate 3 different variations of a short, compelling tagline for a ${businessType} in ${location}. 
+        // Read the image file and convert to base64
+        const imageBuffer = fs.readFileSync(imagePath);
+        const base64Image = imageBuffer.toString('base64');
+        
+        const response = await openai.chat.completions.create({
+            model: "gpt-4-vision-preview",
+            messages: [
+                {
+                    role: "user",
+                    content: [
+                        {
+                            type: "text",
+                            text: "Describe this image in detail, focusing on its main subject, colors, and any notable details that would be relevant for tourism content."
+                        },
+                        {
+                            type: "image_url",
+                            image_url: {
+                                url: `data:image/jpeg;base64,${base64Image}`,
+                            },
+                        },
+                    ],
+                },
+            ],
+            max_tokens: 300,
+        });
+
+        return response.choices[0].message.content;
+    } catch (error) {
+        console.error('Error analyzing image:', error);
+        return 'A beautiful image of the location.';
+    }
+}
+
+async function generateVariations(businessType, location, season, target, uploadedImage) {
+    try {
+        let prompt = `Generate 3 different variations of a short, compelling tagline for a ${businessType} in ${location}. 
         Target audience: ${target}. Season: ${season}. 
         Each variation should be 1-2 sentences maximum. Return only the variations, one per line.`;
+
+        if (uploadedImage) {
+            const imageDescription = await analyzeImage(uploadedImage.path);
+            prompt += `\n\nImage context: ${imageDescription}`;
+        }
 
         const completion = await openai.chat.completions.create({
             model: "gpt-3.5-turbo",

@@ -35,6 +35,9 @@ class ContentGenerator {
             copyBtn.addEventListener('click', this.handleCopy.bind(this));
         }
 
+        // Image upload functionality
+        this.setupImageUpload();
+
         // Real-time validation
         this.setupRealTimeValidation();
     }
@@ -65,6 +68,126 @@ class ContentGenerator {
                 element.addEventListener('input', () => this.clearFieldError(fieldId));
             }
         });
+    }
+
+    setupImageUpload() {
+        const imageInput = document.getElementById('businessImage');
+        const uploadArea = document.getElementById('uploadArea');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const removeBtn = document.getElementById('removeImage');
+        const imageError = document.getElementById('image-error');
+
+        if (!imageInput || !uploadArea) return;
+
+        // File input change
+        imageInput.addEventListener('change', (e) => {
+            this.handleImageUpload(e.target.files[0]);
+        });
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                this.handleImageUpload(files[0]);
+            }
+        });
+
+        // Click to upload
+        uploadArea.addEventListener('click', () => {
+            imageInput.click();
+        });
+
+        // Remove image
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => {
+                this.removeImage();
+            });
+        }
+    }
+
+    handleImageUpload(file) {
+        const imageError = document.getElementById('image-error');
+        const imagePreview = document.getElementById('imagePreview');
+        const previewImg = document.getElementById('previewImg');
+        const uploadArea = document.getElementById('uploadArea');
+
+        // Clear previous errors
+        this.clearImageError();
+
+        // Validate file
+        if (!file) return;
+
+        // Check file type
+        if (!file.type.startsWith('image/')) {
+            this.showImageError('Please select a valid image file (JPG, PNG, GIF)');
+            return;
+        }
+
+        // Check file size (5MB limit)
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (file.size > maxSize) {
+            this.showImageError('Image file size must be less than 5MB');
+            return;
+        }
+
+        // Create preview
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            previewImg.src = e.target.result;
+            imagePreview.style.display = 'block';
+            uploadArea.style.display = 'none';
+            
+            // Store the file for later use
+            this.selectedImage = file;
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    removeImage() {
+        const imageInput = document.getElementById('businessImage');
+        const imagePreview = document.getElementById('imagePreview');
+        const uploadArea = document.getElementById('uploadArea');
+
+        // Clear the file input
+        imageInput.value = '';
+        
+        // Hide preview and show upload area
+        imagePreview.style.display = 'none';
+        uploadArea.style.display = 'block';
+        
+        // Clear stored image
+        this.selectedImage = null;
+        
+        // Clear any errors
+        this.clearImageError();
+    }
+
+    showImageError(message) {
+        const imageError = document.getElementById('image-error');
+        if (imageError) {
+            imageError.textContent = message;
+        }
+    }
+
+    clearImageError() {
+        const imageError = document.getElementById('image-error');
+        if (imageError) {
+            imageError.textContent = '';
+        }
     }
 
     validateField(fieldId) {
@@ -228,6 +351,13 @@ class ContentGenerator {
             }
         });
 
+        // Add image data if available
+        if (this.selectedImage) {
+            formData.hasImage = true;
+            formData.imageName = this.selectedImage.name;
+            formData.imageType = this.selectedImage.type;
+        }
+
         return formData;
     }
 
@@ -239,12 +369,37 @@ class ContentGenerator {
 
     async simulateApiCall(formData) {
         try {
+            // Create FormData if image is present
+            let requestBody;
+            let headers = {
+                'Content-Type': 'application/json',
+            };
+
+            if (formData.hasImage && this.selectedImage) {
+                // Use FormData for multipart upload
+                const formDataObj = new FormData();
+                
+                // Add text data
+                Object.keys(formData).forEach(key => {
+                    if (key !== 'hasImage' && key !== 'imageName' && key !== 'imageType') {
+                        formDataObj.append(key, formData[key]);
+                    }
+                });
+                
+                // Add image file
+                formDataObj.append('image', this.selectedImage);
+                
+                requestBody = formDataObj;
+                headers = {}; // Let browser set Content-Type for FormData
+            } else {
+                // Use JSON for text-only requests
+                requestBody = JSON.stringify(formData);
+            }
+
             const response = await fetch('/api/generate-content', {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
+                headers: headers,
+                body: requestBody
             });
             
             if (!response.ok) {
