@@ -47,6 +47,19 @@ app.use(express.json());
 app.use(express.static(__dirname));
 app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
+// Explicit routes for static files
+app.get('/styles.css', (req, res) => {
+    res.sendFile(path.join(__dirname, 'styles.css'));
+});
+
+app.get('/script.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'script.js'));
+});
+
+app.get('/templates.js', (req, res) => {
+    res.sendFile(path.join(__dirname, 'templates.js'));
+});
+
 // Root route to serve the main page
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'index.html'));
