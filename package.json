@@ -1,0 +1,44 @@
+{
+  "name": "tourism-ai-content-generator",
+  "version": "1.0.0",
+  "description": "A modern, accessible web application for generating tourism content ideas with AI-powered assistance",
+  "main": "index.html",
+  "scripts": {
+    "start": "python3 -m http.server 8000",
+    "dev": "python3 -m http.server 8000",
+    "test": "echo \"No tests specified yet\" && exit 0",
+    "lint": "echo \"No linter configured yet\" && exit 0",
+    "build": "echo \"No build process needed for static files\" && exit 0"
+  },
+  "keywords": [
+    "tourism",
+    "content-generation",
+    "ai",
+    "accessibility",
+    "web-app",
+    "javascript",
+    "html5",
+    "css3"
+  ],
+  "author": "Tourism AI Content Generator Team",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-username/tourism-ai-generator.git"
+  },
+  "bugs": {
+    "url": "https://github.com/your-username/tourism-ai-generator/issues"
+  },
+  "homepage": "https://github.com/your-username/tourism-ai-generator#readme",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "devDependencies": {},
+  "dependencies": {},
+  "browserslist": [
+    "> 1%",
+    "last 2 versions",
+    "not dead",
+    "not ie 11"
+  ]
+} 

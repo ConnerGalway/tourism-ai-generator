@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tourism AI Content Idea Generator</title>
+    <link rel="stylesheet" href="styles.css">
+    <meta name="description" content="Create compelling tourism content ideas with AI-powered assistance">
+</head>
+<body>
+    <div class="container">
+        <header class="header" role="banner">
+            <h1>🏖️ Tourism AI Content Idea Generator</h1>
+            <p>Create compelling tourism content ideas with AI-powered assistance</p>
+        </header>
+
+        <main class="main-content" role="main">
+            <section class="input-section" aria-labelledby="form-title">
+                <h2 id="form-title" class="visually-hidden">Content Generation Form</h2>
+                
+                <div class="demo-notice" role="alert">
+                    <strong>Demo Mode:</strong> This MVP uses simulated AI responses. In production, this would connect to OpenAI API.
+                </div>
+
+                <form id="contentForm" novalidate>
+                    <div class="form-group">
+                        <label for="businessType">Business Type <span class="required" aria-label="required">*</span></label>
+                        <select id="businessType" required aria-describedby="businessType-error">
+                            <option value="">Select your business type</option>
+                            <option value="hotel">Hotel/Resort</option>
+                            <option value="restaurant">Restaurant</option>
+                            <option value="tour">Tour Operator</option>
+                            <option value="attraction">Attraction/Activity</option>
+                            <option value="destination">Destination Marketing</option>
+                            <option value="rental">Vacation Rental</option>
+                        </select>
+                        <div id="businessType-error" class="error-message" role="alert" aria-live="polite"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="contentType">Content Type <span class="required" aria-label="required">*</span></label>
+                        <select id="contentType" required aria-describedby="contentType-error">
+                            <option value="">Select content type</option>
+                            <option value="blog">Blog Post</option>
+                            <option value="social">Social Media Post</option>
+                            <option value="email">Email Campaign</option>
+                            <option value="ad">Advertisement Copy</option>
+                            <option value="description">Business Description</option>
+                            <option value="newsletter">Newsletter Content</option>
+                        </select>
+                        <div id="contentType-error" class="error-message" role="alert" aria-live="polite"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="location">Location/Destination <span class="required" aria-label="required">*</span></label>
+                        <input type="text" id="location" placeholder="e.g., Muskoka, Ontario" required aria-describedby="location-error">
+                        <div id="location-error" class="error-message" role="alert" aria-live="polite"></div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="season">Season/Time</label>
+                        <select id="season">
+                            <option value="any">Any Season</option>
+                            <option value="spring">Spring</option>
+                            <option value="summer">Summer</option>
+                            <option value="fall">Fall/Autumn</option>
+                            <option value="winter">Winter</option>
+                            <option value="holiday">Holiday Season</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="target">Target Audience</label>
+                        <select id="target">
+                            <option value="families">Families</option>
+                            <option value="couples">Couples</option>
+                            <option value="solo">Solo Travelers</option>
+                            <option value="groups">Groups</option>
+                            <option value="business">Business Travelers</option>
+                            <option value="adventure">Adventure Seekers</option>
+                            <option value="luxury">Luxury Travelers</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="tone">Tone of Voice</label>
+                        <select id="tone">
+                            <option value="friendly">Friendly & Welcoming</option>
+                            <option value="professional">Professional</option>
+                            <option value="exciting">Exciting & Energetic</option>
+                            <option value="luxury">Luxury & Sophisticated</option>
+                            <option value="casual">Casual & Relaxed</option>
+                            <option value="informative">Informative & Helpful</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="keywords">Key Features/Keywords</label>
+                        <textarea id="keywords" placeholder="e.g., lakefront, family-friendly, outdoor activities, fine dining" aria-describedby="keywords-help"></textarea>
+                        <div id="keywords-help" class="help-text">Enter keywords separated by commas</div>
+                    </div>
+
+                    <button type="submit" class="generate-btn" id="generateBtn" aria-describedby="generate-status">
+                        🎯 Generate Content Ideas
+                    </button>
+                    <div id="generate-status" class="status-message" role="status" aria-live="polite"></div>
+                </form>
+            </section>
+
+            <section class="output-section" aria-labelledby="output-title">
+                <h2 id="output-title" class="visually-hidden">Generated Content</h2>
+                
+                <div class="content-tabs" role="tablist" aria-label="Content tabs">
+                    <button class="tab active" role="tab" aria-selected="true" aria-controls="main-content" id="main-tab" data-tab="main">
+                        Main Content
+                    </button>
+                    <button class="tab" role="tab" aria-selected="false" aria-controls="variations-content" id="variations-tab" data-tab="variations">
+                        Variations
+                    </button>
+                    <button class="tab" role="tab" aria-selected="false" aria-controls="hashtags-content" id="hashtags-tab" data-tab="hashtags">
+                        Hashtags
+                    </button>
+                </div>
+
+                <div class="tab-content">
+                    <div id="main-content" class="output-area active" role="tabpanel" aria-labelledby="main-tab">
+                        <div class="welcome-message">
+                            👋 Welcome! Fill out the form on the left and click "Generate Content Ideas" to create your tourism content ideas.
+                        </div>
+                    </div>
+                    <div id="variations-content" class="output-area" role="tabpanel" aria-labelledby="variations-tab" hidden>
+                        <div class="welcome-message">
+                            Content variations will appear here after generation.
+                        </div>
+                    </div>
+                    <div id="hashtags-content" class="output-area" role="tabpanel" aria-labelledby="hashtags-tab" hidden>
+                        <div class="welcome-message">
+                            Relevant hashtags will appear here after generation.
+                        </div>
+                    </div>
+                </div>
+
+                <button class="copy-btn" id="copyBtn" style="display: none;" aria-label="Copy content to clipboard">
+                    📋 Copy to Clipboard
+                </button>
+            </section>
+        </main>
+    </div>
+
+    <script src="templates.js"></script>
+    <script src="script.js"></script>
+</body>
+</html> 

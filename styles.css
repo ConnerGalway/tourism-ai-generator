@@ -1,0 +1,409 @@
+/* CSS Custom Properties for consistent theming */
+:root {
+    --primary-color: #2196F3;
+    --secondary-color: #1976D2;
+    --success-color: #4CAF50;
+    --error-color: #f44336;
+    --warning-color: #ff9800;
+    --text-primary: #333;
+    --text-secondary: #666;
+    --border-color: #e9ecef;
+    --background-light: #f8f9fa;
+    --border-radius: 10px;
+    --transition: all 0.3s ease;
+    --shadow: 0 20px 40px rgba(0,0,0,0.1);
+    --shadow-hover: 0 25px 50px rgba(0,0,0,0.15);
+}
+
+/* Reset and Base Styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    padding: 20px;
+    line-height: 1.6;
+    color: var(--text-primary);
+}
+
+/* Accessibility - Screen reader only content */
+.visually-hidden {
+    position: absolute !important;
+    width: 1px !important;
+    height: 1px !important;
+    padding: 0 !important;
+    margin: -1px !important;
+    overflow: hidden !important;
+    clip: rect(0, 0, 0, 0) !important;
+    white-space: nowrap !important;
+    border: 0 !important;
+}
+
+/* Container and Layout */
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    background: white;
+    border-radius: 20px;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+
+/* Header Styles */
+.header {
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: white;
+    padding: 30px;
+    text-align: center;
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    font-weight: 700;
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+/* Main Content Layout */
+.main-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0;
+    min-height: 600px;
+}
+
+/* Input Section */
+.input-section {
+    padding: 40px;
+    background: var(--background-light);
+    border-right: 1px solid var(--border-color);
+}
+
+/* Output Section */
+.output-section {
+    padding: 40px;
+    background: white;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 25px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.required {
+    color: var(--error-color);
+    font-weight: bold;
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    font-size: 16px;
+    transition: var(--transition);
+    background: white;
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+input.error, select.error, textarea.error {
+    border-color: var(--error-color);
+}
+
+textarea {
+    height: 80px;
+    resize: vertical;
+    font-family: inherit;
+}
+
+/* Error and Help Messages */
+.error-message {
+    color: var(--error-color);
+    font-size: 14px;
+    margin-top: 5px;
+    min-height: 20px;
+}
+
+.help-text {
+    color: var(--text-secondary);
+    font-size: 14px;
+    margin-top: 5px;
+    font-style: italic;
+}
+
+.status-message {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: var(--border-radius);
+    font-size: 14px;
+}
+
+.status-message.success {
+    background: rgba(76, 175, 80, 0.1);
+    color: var(--success-color);
+    border: 1px solid rgba(76, 175, 80, 0.3);
+}
+
+.status-message.error {
+    background: rgba(244, 67, 54, 0.1);
+    color: var(--error-color);
+    border: 1px solid rgba(244, 67, 54, 0.3);
+}
+
+/* Button Styles */
+.generate-btn {
+    background: linear-gradient(135deg, var(--success-color) 0%, #45a049 100%);
+    color: white;
+    border: none;
+    padding: 15px 30px;
+    border-radius: var(--border-radius);
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+.generate-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-hover);
+}
+
+.generate-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.generate-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.3);
+}
+
+/* Loading Spinner */
+.spinner {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border: 3px solid rgba(255,255,255,.3);
+    border-radius: 50%;
+    border-top-color: #fff;
+    animation: spin 1s ease-in-out infinite;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Demo Notice */
+.demo-notice {
+    background: #fff3cd;
+    border: 1px solid #ffeaa7;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    margin-bottom: 25px;
+    color: #856404;
+    text-align: center;
+    font-size: 14px;
+}
+
+/* Output Area */
+.output-area {
+    background: var(--background-light);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    min-height: 400px;
+    white-space: pre-wrap;
+    font-family: 'Georgia', serif;
+    line-height: 1.6;
+    display: none;
+}
+
+.output-area.active {
+    display: block;
+}
+
+.welcome-message {
+    color: var(--text-secondary);
+    font-style: italic;
+    text-align: center;
+    padding: 40px 20px;
+}
+
+/* Content Tabs */
+.content-tabs {
+    display: flex;
+    margin-bottom: 20px;
+    border-bottom: 2px solid var(--border-color);
+}
+
+.tab {
+    padding: 10px 20px;
+    cursor: pointer;
+    border: none;
+    background: none;
+    border-bottom: 2px solid transparent;
+    transition: var(--transition);
+    font-size: 16px;
+    color: var(--text-secondary);
+    position: relative;
+}
+
+.tab:hover {
+    color: var(--primary-color);
+}
+
+.tab.active {
+    border-bottom-color: var(--primary-color);
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.tab:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+
+/* Copy Button */
+.copy-btn {
+    background: var(--primary-color);
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.copy-btn:hover {
+    background: var(--secondary-color);
+    transform: translateY(-1px);
+}
+
+.copy-btn:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.3);
+}
+
+/* Loading State */
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-secondary);
+    font-style: italic;
+    padding: 40px 20px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .main-content {
+        grid-template-columns: 1fr;
+    }
+    
+    .input-section {
+        border-right: none;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .input-section,
+    .output-section {
+        padding: 20px;
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        padding: 10px;
+    }
+    
+    .header {
+        padding: 20px;
+    }
+    
+    .header h1 {
+        font-size: 1.8rem;
+    }
+    
+    .input-section,
+    .output-section {
+        padding: 15px;
+    }
+    
+    .content-tabs {
+        flex-direction: column;
+    }
+    
+    .tab {
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+    
+    .tab.active {
+        border-bottom-color: var(--primary-color);
+    }
+}
+
+/* High contrast mode support */
+@media (prefers-contrast: high) {
+    :root {
+        --border-color: #000;
+        --text-primary: #000;
+        --text-secondary: #333;
+    }
+    
+    input, select, textarea {
+        border-width: 3px;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+    
+    .generate-btn:hover {
+        transform: none;
+    }
+    
+    .copy-btn:hover {
+        transform: none;
+    }
+} 
