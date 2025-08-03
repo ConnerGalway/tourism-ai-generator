@@ -43,20 +43,31 @@ const upload = multer({
 app.use(cors());
 app.use(express.json());
 
-// Serve static files
-app.use(express.static(__dirname));
+// Serve static files with correct MIME types
+app.use(express.static(__dirname, {
+    setHeaders: (res, path) => {
+        if (path.endsWith('.css')) {
+            res.setHeader('Content-Type', 'text/css');
+        } else if (path.endsWith('.js')) {
+            res.setHeader('Content-Type', 'application/javascript');
+        }
+    }
+}));
 app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
-// Explicit routes for static files
+// Explicit routes for static files with correct MIME types
 app.get('/styles.css', (req, res) => {
+    res.setHeader('Content-Type', 'text/css');
     res.sendFile(path.join(__dirname, 'styles.css'));
 });
 
 app.get('/script.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(path.join(__dirname, 'script.js'));
 });
 
 app.get('/templates.js', (req, res) => {
+    res.setHeader('Content-Type', 'application/javascript');
     res.sendFile(path.join(__dirname, 'templates.js'));
 });
 
