@@ -230,6 +230,12 @@ class ContentGenerator {
     validateForm() {
         let isValid = true;
         
+        // Safety check for requiredFields
+        if (!this.requiredFields || !Array.isArray(this.requiredFields)) {
+            console.error('requiredFields is not properly initialized in validateForm:', this.requiredFields);
+            return false;
+        }
+        
         // Clear all previous errors
         this.requiredFields.forEach(fieldId => {
             this.clearFieldError(fieldId);
