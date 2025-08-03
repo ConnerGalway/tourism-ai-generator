@@ -7,6 +7,12 @@ class ContentGenerator {
     constructor() {
         this.currentContent = {};
         this.isGenerating = false;
+        this.requiredFields = ['businessType', 'contentType', 'location'];
+        this.errorMessages = {
+            businessType: 'Please select a business type',
+            contentType: 'Please select a content type',
+            location: 'Please enter a location'
+        };
         this.init();
     }
 
@@ -43,12 +49,7 @@ class ContentGenerator {
     }
 
     setupValidation() {
-        this.requiredFields = ['businessType', 'contentType', 'location'];
-        this.errorMessages = {
-            businessType: 'Please select a business type',
-            contentType: 'Please select a content type',
-            location: 'Please enter a location'
-        };
+        // This method is now redundant as requiredFields is initialized in constructor
     }
 
     setupAccessibility() {
@@ -61,8 +62,10 @@ class ContentGenerator {
     }
 
     setupRealTimeValidation() {
-        if (!this.requiredFields) {
-            console.error('requiredFields is not initialized');
+        console.log('Setting up real-time validation, requiredFields:', this.requiredFields);
+        
+        if (!this.requiredFields || !Array.isArray(this.requiredFields)) {
+            console.error('requiredFields is not properly initialized:', this.requiredFields);
             return;
         }
         
