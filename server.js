@@ -42,7 +42,9 @@ const upload = multer({
 // Middleware
 app.use(cors());
 app.use(express.json());
-app.use(express.static('.')); // Serve static files
+
+// Serve static files
+app.use(express.static(__dirname));
 app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
 // Root route to serve the main page
