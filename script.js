@@ -251,15 +251,20 @@ class ContentGenerator {
 
     async handleSubmit(e) {
         e.preventDefault();
+        console.log('Form submitted!');
         
         if (this.isGenerating) {
+            console.log('Already generating, preventing multiple submissions');
             return; // Prevent multiple submissions
         }
 
+        console.log('Validating form...');
         if (!this.validateForm()) {
+            console.log('Form validation failed');
             return;
         }
 
+        console.log('Starting content generation...');
         await this.generateContent();
     }
 
@@ -307,15 +312,20 @@ class ContentGenerator {
         const copyBtn = document.getElementById('copyBtn');
 
         try {
+            console.log('Showing loading state...');
             // Show loading state
             this.showLoading();
             this.showStatus('Generating content ideas...', 'success');
 
             // Get form data
+            console.log('Getting form data...');
             const formData = this.getFormData();
+            console.log('Form data:', formData);
 
             // Call OpenAI API
+            console.log('Calling API...');
             const apiResponse = await this.simulateApiCall(formData);
+            console.log('API response:', apiResponse);
 
             // Process API response
             this.currentContent = {
@@ -325,6 +335,7 @@ class ContentGenerator {
             };
 
             // Show results
+            console.log('Showing results...');
             this.hideLoading();
             this.showStatus('Content generated successfully!', 'success');
             this.switchTab('main');
@@ -369,6 +380,8 @@ class ContentGenerator {
 
     async simulateApiCall(formData) {
         try {
+            console.log('Starting API call with formData:', formData);
+            
             // Create FormData if image is present
             let requestBody;
             let headers = {
@@ -376,6 +389,7 @@ class ContentGenerator {
             };
 
             if (formData.hasImage && this.selectedImage) {
+                console.log('Using FormData for image upload');
                 // Use FormData for multipart upload
                 const formDataObj = new FormData();
                 
@@ -392,21 +406,30 @@ class ContentGenerator {
                 requestBody = formDataObj;
                 headers = {}; // Let browser set Content-Type for FormData
             } else {
+                console.log('Using JSON for text-only request');
                 // Use JSON for text-only requests
                 requestBody = JSON.stringify(formData);
             }
 
+            console.log('Making fetch request to /api/generate-content');
             const response = await fetch('/api/generate-content', {
                 method: 'POST',
                 headers: headers,
                 body: requestBody
             });
             
+            console.log('Response status:', response.status);
+            console.log('Response ok:', response.ok);
+            
             if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Response error text:', errorText);
                 throw new Error(`API request failed: ${response.status} ${response.statusText}`);
             }
             
-            return await response.json();
+            const result = await response.json();
+            console.log('API call successful, result:', result);
+            return result;
         } catch (error) {
             console.error('API call failed:', error);
             throw new Error('Failed to generate content. Please check your connection and try again.');
@@ -541,8 +564,11 @@ function checkDependencies() {
 
 // Initialize the application
 document.addEventListener('DOMContentLoaded', function() {
+    console.log('DOM loaded, checking dependencies...');
     if (checkDependencies()) {
+        console.log('Dependencies OK, creating ContentGenerator...');
         new ContentGenerator();
+        console.log('ContentGenerator created successfully');
     } else {
         console.error('Application failed to initialize due to missing dependencies');
     }
