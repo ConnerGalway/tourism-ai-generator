@@ -191,11 +191,15 @@ class ContentGenerator {
             // Get form data
             const formData = this.getFormData();
 
-            // Simulate API delay (replace with actual API call)
-            await this.simulateApiCall();
+            // Call OpenAI API
+            const apiResponse = await this.simulateApiCall(formData);
 
-            // Generate content
-            this.currentContent = this.generateMockContent(formData);
+            // Process API response
+            this.currentContent = {
+                main: apiResponse.main,
+                variations: Array.isArray(apiResponse.variations) ? apiResponse.variations.join('\n\n') : apiResponse.variations,
+                hashtags: Array.isArray(apiResponse.hashtags) ? apiResponse.hashtags.join(' ') : apiResponse.hashtags
+            };
 
             // Show results
             this.hideLoading();
@@ -233,9 +237,25 @@ class ContentGenerator {
         return input.replace(/[<>]/g, '').trim();
     }
 
-    async simulateApiCall() {
-        // Simulate network delay
-        return new Promise(resolve => setTimeout(resolve, 2000));
+    async simulateApiCall(formData) {
+        try {
+            const response = await fetch('/api/generate-content', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData)
+            });
+            
+            if (!response.ok) {
+                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+            }
+            
+            return await response.json();
+        } catch (error) {
+            console.error('API call failed:', error);
+            throw new Error('Failed to generate content. Please check your connection and try again.');
+        }
     }
 
     generateMockContent(data) {
