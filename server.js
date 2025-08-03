@@ -45,6 +45,16 @@ app.use(express.json());
 app.use(express.static('.')); // Serve static files
 app.use('/uploads', express.static('uploads')); // Serve uploaded files
 
+// Root route to serve the main page
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'index.html'));
+});
+
+// Health check endpoint
+app.get('/api/health', (req, res) => {
+    res.json({ status: 'OK', message: 'Tourism AI Content Generator API is running' });
+});
+
 // Initialize OpenAI
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
@@ -285,11 +295,6 @@ async function generateHashtags(businessType, location) {
         return ['#Travel', '#Tourism', '#VisitLocal'];
     }
 }
-
-// Health check endpoint
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'OK', message: 'Tourism AI Content Generator API is running' });
-});
 
 // Start server
 app.listen(PORT, () => {
