@@ -11,8 +11,8 @@ class ContentGenerator {
     }
 
     init() {
-        this.bindEvents();
         this.setupValidation();
+        this.bindEvents();
         this.setupAccessibility();
     }
 
@@ -61,6 +61,11 @@ class ContentGenerator {
     }
 
     setupRealTimeValidation() {
+        if (!this.requiredFields) {
+            console.error('requiredFields is not initialized');
+            return;
+        }
+        
         this.requiredFields.forEach(fieldId => {
             const element = document.getElementById(fieldId);
             if (element) {
